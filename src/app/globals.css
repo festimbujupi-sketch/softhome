@@ -1,0 +1,98 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: var(--font-jost), ui-sans-serif, system-ui, sans-serif;
+
+  --color-linen: #f6f2ec;
+  --color-sand: #ece5da;
+  --color-stone: #d9d0c3;
+  --color-clay: #9a7b5f;
+  --color-clay-dark: #7c6049;
+  --color-ink: #1f1c19;
+  --color-muted: #6f675e;
+  --color-line: #e4ddd2;
+  --color-sage: #6d7560;
+  --color-danger: #b4432f;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--color-linen);
+  color: var(--color-ink);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Thin uppercase label style used across the shop, echoing the logo. */
+.eyebrow {
+  font-size: 0.75rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 3rem;
+  padding: 0 1.5rem;
+  font-size: 0.875rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  transition: background-color 0.2s, color 0.2s, border-color 0.2s;
+  cursor: pointer;
+}
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.btn-primary {
+  background: var(--color-ink);
+  color: var(--color-linen);
+}
+.btn-primary:hover:not(:disabled) {
+  background: var(--color-clay-dark);
+}
+.btn-outline {
+  border: 1px solid var(--color-ink);
+}
+.btn-outline:hover:not(:disabled) {
+  background: var(--color-ink);
+  color: var(--color-linen);
+}
+.btn-whatsapp {
+  background: #1f8f4e;
+  color: white;
+}
+.btn-whatsapp:hover:not(:disabled) {
+  background: #187340;
+}
+
+.field {
+  width: 100%;
+  min-height: 2.75rem;
+  padding: 0.6rem 0.85rem;
+  background: white;
+  border: 1px solid var(--color-stone);
+  border-radius: 2px;
+  font-size: 0.95rem;
+}
+.field:focus {
+  outline: 2px solid var(--color-clay);
+  outline-offset: -1px;
+  border-color: transparent;
+}
+.label {
+  display: block;
+  margin-bottom: 0.35rem;
+  font-size: 0.8rem;
+  color: var(--color-muted);
+}
+
+.prose-shop p + p {
+  margin-top: 1rem;
+}
