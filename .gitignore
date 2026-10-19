@@ -43,3 +43,11 @@ next-env.d.ts
 local.db*
 .env*.local
 public/uploads/
+
+.vercel
+.env*
+
+# Tooling added by the Vercel/Turso CLI
+.agents/
+.claude/skills/
+skills-lock.json
