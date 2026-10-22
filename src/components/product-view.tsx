@@ -120,7 +120,7 @@ export function ProductView({
           {discountPercent(price, product.compareAtPrice) > 0 && (
             <>
               <span className="ml-3 text-base text-muted line-through">{formatPrice(product.compareAtPrice!)}</span>
-              <span className="ml-3 bg-clay px-2 py-0.5 align-middle text-xs text-white">
+              <span className="ml-3 bg-sale px-2 py-0.5 align-middle text-xs font-normal text-white">
                 -{discountPercent(price, product.compareAtPrice)}%
               </span>
             </>

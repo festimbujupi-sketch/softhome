@@ -34,7 +34,7 @@ export function ProductCard({ product }: { product: ProductCardData }) {
             <span className="bg-white/90 px-2 py-1 text-[10px] uppercase tracking-[0.14em]">E shitur</span>
           )}
           {product.inStock && discount > 0 && (
-            <span className="bg-clay px-2 py-1 text-[11px] tracking-[0.08em] text-white">-{discount}%</span>
+            <span className="bg-sale px-2 py-1 text-[11px] font-normal tracking-[0.08em] text-white">-{discount}%</span>
           )}
         </div>
       </div>
