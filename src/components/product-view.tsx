@@ -6,7 +6,7 @@ import { Check } from "lucide-react";
 import { useCart } from "./cart";
 import { QuantityControl } from "./cart-drawer";
 import { WhatsAppIcon } from "./whatsapp-button";
-import { formatPrice } from "@/lib/format";
+import { discountPercent, formatPrice } from "@/lib/format";
 
 type Img = { id: number; url: string; alt: string };
 type Var = { id: number; name: string; price: number | null; stock: number; colorHex: string | null; imageId: number | null };
@@ -117,8 +117,13 @@ export function ProductView({
         <h1 className="text-3xl font-light leading-tight sm:text-4xl">{product.name}</h1>
         <p className="mt-4 text-xl">
           {formatPrice(price)}
-          {product.compareAtPrice && product.compareAtPrice > price && (
-            <span className="ml-3 text-base text-muted line-through">{formatPrice(product.compareAtPrice)}</span>
+          {discountPercent(price, product.compareAtPrice) > 0 && (
+            <>
+              <span className="ml-3 text-base text-muted line-through">{formatPrice(product.compareAtPrice!)}</span>
+              <span className="ml-3 bg-clay px-2 py-0.5 align-middle text-xs text-white">
+                -{discountPercent(price, product.compareAtPrice)}%
+              </span>
+            </>
           )}
         </p>
 

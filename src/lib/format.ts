@@ -13,6 +13,11 @@ export function parsePrice(input: string): number | null {
   return Number.isFinite(value) ? Math.round(value * 100) : null;
 }
 
+/** Discount in whole percent, e.g. 1990 -> 1490 gives 25. */
+export function discountPercent(price: number, compareAt: number | null | undefined) {
+  return compareAt && compareAt > price ? Math.round((1 - price / compareAt) * 100) : 0;
+}
+
 export function centsToInput(cents: number | null | undefined) {
   return cents == null ? "" : (cents / 100).toFixed(2);
 }

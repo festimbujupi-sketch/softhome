@@ -97,7 +97,8 @@ export async function saveProduct(input: ProductInput): Promise<{ ok: boolean; e
     description: p.description,
     details: p.details,
     price: p.price,
-    compareAtPrice: p.compareAtPrice,
+    // A crossed-out price only makes sense when it is higher than the selling price.
+    compareAtPrice: p.compareAtPrice != null && p.compareAtPrice > p.price ? p.compareAtPrice : null,
     optionLabel: p.optionLabel,
     featured: p.featured,
     active: p.active,

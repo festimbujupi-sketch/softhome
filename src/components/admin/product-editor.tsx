@@ -42,8 +42,11 @@ export function ProductEditor({ initial, categories }: { initial: Initial | null
   const [categoryId, setCategoryId] = useState<string>(initial?.categoryId ? String(initial.categoryId) : String(categories[0]?.id ?? ""));
   const [description, setDescription] = useState(initial?.description ?? "");
   const [details, setDetails] = useState(initial?.details ?? "");
-  const [price, setPrice] = useState(centsToInput(initial?.price));
-  const [compareAt, setCompareAt] = useState(centsToInput(initial?.compareAtPrice));
+  // Stored as price (what the customer pays) + compareAtPrice (crossed-out price).
+  // The editor shows them as a regular price and an optional sale price.
+  const initialPrices = splitPrices(initial?.price, initial?.compareAtPrice);
+  const [price, setPrice] = useState(centsToInput(initialPrices.regular));
+  const [salePrice, setSalePrice] = useState(centsToInput(initialPrices.sale));
   const [optionLabel, setOptionLabel] = useState(initial?.optionLabel ?? "Ngjyra");
   const [featured, setFeatured] = useState(initial?.featured ?? false);
   const [active, setActive] = useState(initial?.active ?? true);
@@ -103,8 +106,12 @@ export function ProductEditor({ initial, categories }: { initial: Initial | null
 
   function save() {
     setMessage(null);
-    const priceCents = parsePrice(price);
-    if (priceCents == null) return setMessage({ type: "error", text: "Shkruani çmimin e produktit." });
+    const regularCents = parsePrice(price);
+    if (regularCents == null) return setMessage({ type: "error", text: "Shkruani çmimin e produktit." });
+    const saleCents = parsePrice(salePrice);
+    if (saleCents != null && saleCents >= regularCents) {
+      return setMessage({ type: "error", text: "Çmimi me zbritje duhet të jetë më i ulët se çmimi i rregullt." });
+    }
 
     const payload: ProductInput = {
       id: initial?.id,
@@ -113,8 +120,8 @@ export function ProductEditor({ initial, categories }: { initial: Initial | null
       categoryId: categoryId ? Number(categoryId) : null,
       description,
       details,
-      price: priceCents,
-      compareAtPrice: parsePrice(compareAt),
+      price: saleCents ?? regularCents,
+      compareAtPrice: saleCents != null ? regularCents : null,
       optionLabel,
       featured,
       active,
@@ -270,7 +277,7 @@ export function ProductEditor({ initial, categories }: { initial: Initial | null
                         <input
                           className="field !min-h-9 w-24 rounded !py-1"
                           inputMode="decimal"
-                          placeholder={price || "—"}
+                          placeholder={salePrice || price || "—"}
                           value={v.price}
                           onChange={(e) => updateVariant(v.key, { price: e.target.value })}
                         />
@@ -340,12 +347,21 @@ export function ProductEditor({ initial, categories }: { initial: Initial | null
           </Card>
           <Card className="space-y-4 p-5">
             <div>
-              <label className="label">Çmimi (€)</label>
+              <label className="label">Çmimi i rregullt (€)</label>
               <input className="field rounded" inputMode="decimal" value={price} onChange={(e) => setPrice(e.target.value)} placeholder="0.00" />
             </div>
             <div>
-              <label className="label">Çmimi i vjetër (€, për ofertë)</label>
-              <input className="field rounded" inputMode="decimal" value={compareAt} onChange={(e) => setCompareAt(e.target.value)} placeholder="opsionale" />
+              <label className="label">Çmimi me zbritje (€)</label>
+              <input className="field rounded" inputMode="decimal" value={salePrice} onChange={(e) => setSalePrice(e.target.value)} placeholder="bosh = pa zbritje" />
+              <p className="mt-1 text-xs text-muted">
+                {(() => {
+                  const r = parsePrice(price);
+                  const sp = parsePrice(salePrice);
+                  return r && sp != null && sp < r
+                    ? `Në dyqan shfaqet ${salePrice} € në vend të ${price} € (-${Math.round((1 - sp / r) * 100)}%).`
+                    : "Plotësojeni vetëm kur produkti është në ofertë.";
+                })()}
+              </p>
             </div>
           </Card>
           <Card className="space-y-4 p-5">
@@ -383,6 +399,13 @@ export function ProductEditor({ initial, categories }: { initial: Initial | null
       </div>
     </div>
   );
+}
+
+/** Older entries may have the two prices swapped, so take the higher one as the regular price. */
+function splitPrices(price?: number, compareAt?: number | null) {
+  if (price == null) return { regular: undefined, sale: undefined };
+  if (compareAt == null || compareAt === price) return { regular: price, sale: undefined };
+  return { regular: Math.max(price, compareAt), sale: Math.min(price, compareAt) };
 }
 
 function IconButton({ label, onClick, disabled, children }: { label: string; onClick: () => void; disabled?: boolean; children: React.ReactNode }) {

@@ -1,10 +1,11 @@
 import Image from "next/image";
 import Link from "next/link";
 import type { ProductCardData } from "@/lib/queries";
-import { formatPrice } from "@/lib/format";
+import { discountPercent, formatPrice } from "@/lib/format";
 
 export function ProductCard({ product }: { product: ProductCardData }) {
   const fromPrice = product.variantCount > 1 && product.minPrice < product.price;
+  const discount = discountPercent(product.price, product.compareAtPrice);
   return (
     <Link href={`/produkti/${product.slug}`} className="group block">
       <div className="relative aspect-[4/5] overflow-hidden bg-sand">
@@ -32,8 +33,8 @@ export function ProductCard({ product }: { product: ProductCardData }) {
           {!product.inStock && (
             <span className="bg-white/90 px-2 py-1 text-[10px] uppercase tracking-[0.14em]">E shitur</span>
           )}
-          {product.inStock && product.compareAtPrice && product.compareAtPrice > product.price && (
-            <span className="bg-clay px-2 py-1 text-[10px] uppercase tracking-[0.14em] text-white">Ofertë</span>
+          {product.inStock && discount > 0 && (
+            <span className="bg-clay px-2 py-1 text-[11px] tracking-[0.08em] text-white">-{discount}%</span>
           )}
         </div>
       </div>
@@ -42,8 +43,8 @@ export function ProductCard({ product }: { product: ProductCardData }) {
         <p className="text-sm">
           {fromPrice && <span className="text-muted">nga </span>}
           {formatPrice(product.minPrice)}
-          {product.compareAtPrice && product.compareAtPrice > product.price && (
-            <span className="ml-2 text-muted line-through">{formatPrice(product.compareAtPrice)}</span>
+          {discount > 0 && (
+            <span className="ml-2 text-muted line-through">{formatPrice(product.compareAtPrice!)}</span>
           )}
         </p>
         {product.swatches.length > 1 && (
